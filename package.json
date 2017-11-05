@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "mustache-express": "^1.2.5",
+    "stache": "^0.1.0"
   }
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>{{title}}</title>
+
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <h1>Welcome</h1>
+        <div id="chart"></div>
+    </body>
+    <script>
+        $.ajax({ 
+            type: 'GET', 
+            url: '/stats', 
+            dataType: 'json',
+            success: function (data) { 
+                let series = [];
+                for (const i of data) {
+                    const key = Object.keys(i)[0];
+                    const value = i[key];
+                    series.push({
+                        name: key,
+                        data: Object.values(value)
+                    });
+                }
+                let categories = Object.keys(Object.values(data[0])[0]);
+                console.log(categories);
+                Highcharts.chart('chart', {
+                    chart: {type: 'line'},
+                    title: {text: 'Cumulative'},
+                    subtitle: {text: 'v0.1'},
+                    xAxis: {categories},
+                    yAxis: {title: {text: 'Count'}},
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: false
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series 
+                });
+            }
+        });
+
+
+    </script>
+</html>

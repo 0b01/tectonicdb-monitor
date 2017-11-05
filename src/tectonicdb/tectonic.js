@@ -151,6 +151,7 @@ class TectonicDB {
         // check if received a full response from stream, if no, store to buffer.
         const firstResponse = client.readerBuffer.indexOf(0x0a); // chr(0x0a) == '\n'
         if (firstResponse === -1) { // newline not found
+            console.log('not filled');
             return;
         } else {
             // data up to first newline
@@ -160,8 +161,8 @@ class TectonicDB {
             client.readerBuffer = new Buffer(rest);
 
             const success = data.subarray(0, 8)[0] === 1;
-            const len = new Uint32Array(data.subarray(8,9))[0];
-            const dataBody = String.fromCharCode.apply(null, data.subarray(9, 12+len));
+            // const len = new Uint32Array(data.subarray(8,9))[0];
+            const dataBody = String.fromCharCode.apply(null, data.subarray(9));
             const response = {success, data: dataBody};
 
             if (client.activeQuery) {
