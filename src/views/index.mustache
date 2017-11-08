@@ -9,31 +9,55 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
     <body>
-        <h1>Welcome</h1>
+        <h1>Loading...</h1>
         <div id="chart"></div>
+        <div id="inserts"></div>
     </body>
     <script>
-        $.ajax({ 
-            type: 'GET', 
-            url: '/stats', 
+        $.ajax({
+            type: 'GET',
+            url: '/stats',
             dataType: 'json',
-            success: function (data) { 
+            success: function (data) {
+                console.log('ok');
                 let series = [];
+                let inserts = [];
+
+                let categories = Object.keys(Object.values(data[0])[0]).splice(1).map(n => n*1000);
+
                 for (const i of data) {
                     const key = Object.keys(i)[0];
                     const value = i[key];
+                    const arr = Object.values(value);
+                    const ts = Object.keys(value).map(n=>n*1000);
                     series.push({
                         name: key,
-                        data: Object.values(value)
+                        data: Object.entries(value).splice(1).map(a => [a[0]*1000, a[1]]),
+                        visible: key == 'total',
+                    });
+                    inserts.push({
+                        name: key,
+                        data: arr.slice(1).map((n, i) => [ts[i], n - arr[i]]).splice(1),
+                        visible: key == 'total',
                     });
                 }
-                let categories = Object.keys(Object.values(data[0])[0]);
-                console.log(categories);
+
+
                 Highcharts.chart('chart', {
-                    chart: {type: 'line'},
-                    title: {text: 'Cumulative'},
-                    subtitle: {text: 'v0.1'},
-                    xAxis: {categories},
+                    chart: {
+                        //type: 'line',
+                        events: {
+                            load: function (e) {
+                                console.log('done');
+                                $('h1').remove();
+                            }
+                        },
+                    },
+                    title: {text: 'Total'},
+                    subtitle: {text: 'Cumulative count of total items'},
+                    xAxis: {
+                            type: 'datetime'
+                    },
                     yAxis: {title: {text: 'Count'}},
                     plotOptions: {
                         line: {
@@ -43,7 +67,33 @@
                             enableMouseTracking: false
                         }
                     },
-                    series 
+                    series,
+                });
+                Highcharts.chart('inserts', {
+                    chart: {
+                        //type: 'line',
+                        events: {
+                            load: function (e) {
+                                console.log('done');
+                                $('h1').remove();
+                            }
+                        },
+                    },
+                    title: {text: 'Inserts'},
+                    subtitle: {text: 'delta of total'},
+                    xAxis: {
+                            type: 'datetime'
+                    },
+                    yAxis: {title: {text: 'Count'}},
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: false
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: inserts,
                 });
             }
         });

@@ -1,7 +1,10 @@
 const net = require('net');
+const textEncoding = require('text-encoding');
 const THREADS = 20;
 const PORT = 9001;
 const HOST = 'localhost';
+
+const TextDecoder = textEncoding.TextDecoder;
 
 class TectonicDB {
     // tslint:disable-next-line:no-empty
@@ -162,7 +165,7 @@ class TectonicDB {
 
             const success = data.subarray(0, 8)[0] === 1;
             // const len = new Uint32Array(data.subarray(8,9))[0];
-            const dataBody = String.fromCharCode.apply(null, data.subarray(9));
+            const dataBody = new TextDecoder("utf-8").decode(data.subarray(9));
             const response = {success, data: dataBody};
 
             if (client.activeQuery) {
