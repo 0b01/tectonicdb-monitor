@@ -9,7 +9,7 @@ app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views'); // you can change '/views' to '/public',
 
 // DB
-const {TectonicDB} = require('./tectonicdb');
+const {TectonicDB} = require('tectonic');
 const db = new TectonicDB();
 
 app.get('/stats', async (req, res) => {
